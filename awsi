@@ -8,7 +8,6 @@ http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
 import sys
 import boto.ec2
 import re
-import pprint
 import os
 import ConfigParser
 import pickle
@@ -18,16 +17,16 @@ regions = None
 cache_file = None
 
 
-def print_it(k, v):
+def print_line(k, v):
     print "{0}:\t{1}".format(k,v)
 
 
-def get_instance_from(search_field, arg):
+def get_instance_from(search_field, search_string):
     f = open(cache_file, "r")
     all_instances = pickle.load(f)
     f.close()
 
-    instance = filter(lambda instance: instance[search_field] == arg, all_instances)
+    instance = filter(lambda instance: instance[search_field] == search_string, all_instances)
 
     if not instance:
         print "Not Found. Consider running a refresh if you think this is a mistake"
@@ -45,22 +44,21 @@ def print_multiple_warning(instances):
 
 def print_info(instance):
     print ''
-    print_it('Name', instance['name'])
-    print_it('Acc', instance['acc'])
-    print_it('AZ', instance['az'])
-    print_it('ID', instance['id'])
-    print_it('IP', instance['ip'])
-    print_it('Type', instance['type'])
-    print_it('State', instance['state'])
-    print_it('Key', instance['key'])
-    print_it('DNS', instance['dns'])
+    print_line('Name', instance['name'])
+    print_line('Acc', instance['acc'])
+    print_line('AZ', instance['az'])
+    print_line('ID', instance['id'])
+    print_line('IP', instance['ip'])
+    print_line('Type', instance['type'])
+    print_line('State', instance['state'])
+    print_line('Key', instance['key'])
+    print_line('DNS', instance['dns'])
     print ''
 
 
 def open_ssh_session(instance):
     if instance['state'] == 'running':
         try:
-            #print "connect"
             raw_input('Press enter to continue...\n')
             os.system('ssh -o StrictHostKeyChecking=no -i ~/.ssh/{}.pem ec2-user@{}'.format(instance['key'], instance['ip']))
         except KeyboardInterrupt:
@@ -125,6 +123,7 @@ def refresh_cache():
 if __name__ == '__main__':
 
     arg = ' '.join(sys.argv[1:])
+    
     ip_re = re.compile('^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$')
     id_re = re.compile('^i-.{8}$')
 
