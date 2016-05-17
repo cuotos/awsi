@@ -11,6 +11,7 @@ import re
 import pprint
 import os
 import ConfigParser
+import pickle
 
 profile = None
 regions = None
@@ -123,6 +124,35 @@ def load_config():
 	regions = config.get('main','regions').split(',')
 	profiles = config.get('main','profiles').split(',')
 
+def refresh_cache():
+	all_instances = []
+	for region in regions:
+		for profile in profiles:
+			print "caching {0} {1}".format(profile, region)
+			conn = boto.ec2.connect_to_region(region, profile_name=profile)
+			instances = [
+				instance
+				for reservations in conn.get_all_instances()
+				for instance in reservations.instances
+			]
+			for instance in instances:
+				all_instances.append({
+					"id":instance.id,
+					"name": instance.tags.get('Name', None),
+					"ip":instance.ip_address,
+					"acc":profile,
+					"az":instance.placement,
+					"type":instance.instance_type,
+					"state":instance.state,
+					"key":instance.key_name,
+					"dns":instance.public_dns_name
+				})
+			conn.close()
+
+	f = open("/tmp/awsi_cache", "w")
+	pickle.dump(all_instances, f)
+	f.close()
+
 if __name__ == '__main__':
 
 	arg = ' '.join(sys.argv[1:])
@@ -137,6 +167,10 @@ if __name__ == '__main__':
 
 	if os.path.basename(__file__) == 'awssh':
 		__ssh_session = True
+
+	if "refresh" == arg:
+		refresh_cache()
+		sys.exit(0)
 
 	if ip_re.match(arg):
 		instance = get_instance_from_ip(arg)
