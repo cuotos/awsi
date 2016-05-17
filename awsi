@@ -12,7 +12,6 @@ import os
 import ConfigParser
 import pickle
 from threading import Thread
-import threading
 
 
 profile = None
@@ -99,6 +98,7 @@ def load_config():
 
 def retrieve_servers_from_aws_account(profile):
     global all_instances
+
     for region in regions:
         print "[re]caching {0} {1}".format(profile, region)
         conn = boto.ec2.connect_to_region(region, profile_name=profile)
@@ -137,8 +137,6 @@ def refresh_cache():
         f = open(cache_file, "w")
         pickle.dump(all_instances, f)
         f.close()
-    except KeyboardInterrupt:
-        print "Cancelled"
     except Exception as e:
         print e.message
         sys.exit(1)
