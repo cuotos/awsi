@@ -12,6 +12,7 @@ import os
 import ConfigParser
 import pickle
 
+
 profile = None
 regions = None
 cache_file = None
@@ -39,7 +40,7 @@ def find_instance_from(search_field, search_string):
 
 
 def print_multiple_warning(instances):
-    print "More than one instance found, use a different field"
+    print "More than one instance found, use a different field to be more precise"
     for instance in instances:
         print_instance_info(instance)
 
@@ -59,12 +60,16 @@ def print_instance_info(instance):
 
 
 def open_ssh_session(instance):
+    ssh_key_path = "{}/.ssh/{}.pem".format(os.path.expanduser("~"), instance['key'])
     if instance['state'] == 'running':
-        try:
-            raw_input('Press enter to continue...\n')
-            os.system('ssh -o StrictHostKeyChecking=no -i ~/.ssh/{}.pem ec2-user@{}'.format(instance['key'], instance['ip']))
-        except KeyboardInterrupt:
-            print "Cancelled"
+        if os.path.isfile(ssh_key_path):
+            try:
+                raw_input('Press enter to continue...\n')
+                os.system('ssh -o StrictHostKeyChecking=no -i {} ec2-user@{}'.format(ssh_key_path, instance['ip']))
+            except KeyboardInterrupt:
+                print "Cancelled"
+        else:
+            print "ERROR: ssh key {} not found".format(ssh_key_path)
 
 
 def print_usage():
