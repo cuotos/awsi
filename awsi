@@ -17,33 +17,17 @@ profile = None
 regions = None
 cache_file = None
 
+
 def print_it(k, v):
     print "{0}:\t{1}".format(k,v)
 
 
-def get_instance_from_id(id):
-    return get_instance_from(id, 'id')
-
-
-def get_instance_from_name_tag(name):
-    return get_instance_from(name, 'name_tag')
-
-
-def get_instance_from_ip(ip):
-    return get_instance_from(ip, 'ip_address')
-
-
-def get_instance_from(field, type):
+def get_instance_from(search_field, arg):
     f = open(cache_file, "r")
     all_instances = pickle.load(f)
     f.close()
-    return_instance = None
-    if type == 'name_tag':
-        instance = filter(lambda instance: instance['name'] == arg, all_instances)
-    elif type == 'ip_address':
-        instance = filter(lambda instance: instance['ip'] == arg, all_instances)
-    else:
-        instance = filter(lambda instance: instance['id'] == arg, all_instances)
+
+    instance = filter(lambda instance: instance[search_field] == arg, all_instances)
 
     if not instance:
         print "Not Found. Consider running a refresh if you think this is a mistake"
@@ -137,6 +121,7 @@ def refresh_cache():
     except KeyboardInterrupt:
         print "Cancelled"
 
+
 if __name__ == '__main__':
 
     arg = ' '.join(sys.argv[1:])
@@ -156,15 +141,14 @@ if __name__ == '__main__':
         refresh_cache()
         sys.exit()
 
+    connect_to_instance = None
+
     if ip_re.match(arg):
-        instance = get_instance_from_ip(arg)
-        print_info(instance)
-        open_ssh_session(instance)
+        connect_to_instance = get_instance_from("ip", arg)
     elif id_re.match(arg):
-        instance = get_instance_from_id(arg)
-        print_info(instance)
-        open_ssh_session(instance)
+        connect_to_instance = get_instance_from("id", arg)
     else:
-        instance = get_instance_from_name_tag(arg)
-        print_info(instance)
-        open_ssh_session(instance)
+        connect_to_instance = get_instance_from("name", arg)
+
+    print_info(connect_to_instance)
+    open_ssh_session(connect_to_instance)
