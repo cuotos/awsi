@@ -40,9 +40,9 @@ def get_instance_from(search_field, search_string):
 def print_multiple_warning(instances):
     print "More than one instance found, use a different field"
     for instance in instances:
-        print_info(instance)
+        print_instance_info(instance)
 
-def print_info(instance):
+def print_instance_info(instance):
     print ''
     print_line('Name', instance['name'])
     print_line('Acc', instance['acc'])
@@ -84,7 +84,7 @@ def load_config():
     config.read(os.path.expanduser(config_file))
     regions = config.get('main','regions').split(',')
     profiles = config.get('main','profiles').split(',')
-    cache_file = config.get('main','cache')
+    cache_file = config.get('main','cache_file')
 
 
 def refresh_cache():
@@ -149,5 +149,5 @@ if __name__ == '__main__':
     else:
         connect_to_instance = get_instance_from("name", arg)
 
-    print_info(connect_to_instance)
+    print_instance_info(connect_to_instance)
     open_ssh_session(connect_to_instance)
