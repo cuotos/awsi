@@ -21,7 +21,7 @@ def print_line(k, v):
     print "{0}:\t{1}".format(k,v)
 
 
-def get_instance_from(search_field, search_string):
+def find_instance_from(search_field, search_string):
     f = open(cache_file, "r")
     all_instances = pickle.load(f)
     f.close()
@@ -37,10 +37,12 @@ def get_instance_from(search_field, search_string):
     else:
         return instance[0]
 
+
 def print_multiple_warning(instances):
     print "More than one instance found, use a different field"
     for instance in instances:
         print_instance_info(instance)
+
 
 def print_instance_info(instance):
     print ''
@@ -143,11 +145,11 @@ if __name__ == '__main__':
     connect_to_instance = None
 
     if ip_re.match(arg):
-        connect_to_instance = get_instance_from("ip", arg)
+        connect_to_instance = find_instance_from("ip", arg)
     elif id_re.match(arg):
-        connect_to_instance = get_instance_from("id", arg)
+        connect_to_instance = find_instance_from("id", arg)
     else:
-        connect_to_instance = get_instance_from("name", arg)
+        connect_to_instance = find_instance_from("name", arg)
 
     print_instance_info(connect_to_instance)
     open_ssh_session(connect_to_instance)
