@@ -11,12 +11,14 @@ import re
 import os
 import ConfigParser
 import pickle
+from threading import Thread
 
 
 profile = None
 regions = None
 cache_file = None
 
+all_instances = []
 
 def print_line(k, v):
     print "{0}:\t{1}".format(k,v)
@@ -94,35 +96,51 @@ def load_config():
     cache_file = config.get('main','cache_file')
 
 
+def retrieve_servers_from_aws_account(profile):
+    global all_instances
+
+    for region in regions:
+        print "[re]caching {0} {1}".format(profile, region)
+        conn = boto.ec2.connect_to_region(region, profile_name=profile)
+        instances = [
+            instance
+            for reservations in conn.get_all_instances()
+            for instance in reservations.instances
+        ]
+        for instance in instances:
+            all_instances.append({
+                "id":instance.id,
+                "name": instance.tags.get('Name', None),
+                "ip":instance.ip_address,
+                "acc":profile,
+                "az":instance.placement,
+                "type":instance.instance_type,
+                "state":instance.state,
+                "key":instance.key_name,
+                "dns":instance.public_dns_name
+            })
+        conn.close()
+
+
 def refresh_cache():
+    global all_instances
+    threads = []
     try:
-        all_instances = []
         for profile in profiles:
-            for region in regions:
-                print "[re]caching {0} {1}".format(profile, region)
-                conn = boto.ec2.connect_to_region(region, profile_name=profile)
-                instances = [
-                    instance
-                    for reservations in conn.get_all_instances()
-                    for instance in reservations.instances
-                ]
-                for instance in instances:
-                    all_instances.append({
-                        "id":instance.id,
-                        "name": instance.tags.get('Name', None),
-                        "ip":instance.ip_address,
-                        "acc":profile,
-                        "az":instance.placement,
-                        "type":instance.instance_type,
-                        "state":instance.state,
-                        "key":instance.key_name,
-                        "dns":instance.public_dns_name
-                    })
-                conn.close()
+            t = Thread(name="Thread-{}".format(profile), target=retrieve_servers_from_aws_account, args=(profile,))
+            t.start()
+            threads.append(t)
+
+        for t in threads:
+            t.join()
 
         f = open(cache_file, "w")
         pickle.dump(all_instances, f)
         f.close()
+        print "Cache written to {}".format(cache_file)
+    except Exception as e:
+        print e.message
+        sys.exit(1)
     except KeyboardInterrupt:
         print "Cancelled"
     except boto.provider.ProfileNotFoundError:
