@@ -140,6 +140,10 @@ def refresh_cache():
     except Exception as e:
         print e.message
         sys.exit(1)
+    except KeyboardInterrupt:
+        print "Cancelled"
+    except boto.provider.ProfileNotFoundError:
+        print "profile '{}' not found in aws config".format(profile)
 
 
 if __name__ == '__main__':
