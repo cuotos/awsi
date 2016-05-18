@@ -33,8 +33,3 @@ usage awsi [refresh|i-12345|54.32.10.01|Live Web Server 01]
 
 Todo
 ----
-* Script will only find the first server matching the criteria, need to allow the user to 'keep searching' 
-for example if multiple servers have the same name tag
-* Validate region is real before openening connecton
-* ~~Allow configuration by conf file, regions and profiles~~
-* ~~Allow interupt~~
