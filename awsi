@@ -137,6 +137,7 @@ def refresh_cache():
         f = open(cache_file, "w")
         pickle.dump(all_instances, f)
         f.close()
+        print "Cache written to {}".format(cache_file)
     except Exception as e:
         print e.message
         sys.exit(1)
