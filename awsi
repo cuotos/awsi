@@ -25,7 +25,13 @@ def print_line(k, v):
 
 
 def find_instance_from(search_field, search_string):
-    f = open(cache_file, "r")
+    try:
+        f = open(cache_file, "r")
+    except IOError as e:
+        print e
+        print "Cache file not found, run awsi refresh to generate it"
+        sys.exit(1)
+
     all_instances = pickle.load(f)
     f.close()
 
