@@ -84,7 +84,7 @@ def load_config():
     config.read(os.path.expanduser(config_file))
     regions = config.get('main','regions').split(',')
     profiles = config.get('main','profiles').split(',')
-    cache_file = config.get('main','cache')
+    cache_file = config.get('main','cache_file')
 
 
 def refresh_cache():
