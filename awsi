@@ -101,7 +101,6 @@ def load_config():
     profiles = config.get('main','profiles').split(',')
     cache_file = config.get('main','cache_file')
 
-
 def retrieve_servers_from_aws_account(profile):
     global all_instances
 
@@ -126,7 +125,6 @@ def retrieve_servers_from_aws_account(profile):
                 "dns":instance.public_dns_name
             })
         conn.close()
-
 
 def refresh_cache():
     global all_instances
