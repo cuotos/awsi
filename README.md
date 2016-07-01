@@ -6,7 +6,7 @@ Summary
 -------
 awsi script can help search for a server in aws and connect to it.
 
-It relise on you having boto installed and aws profiles set up containing your key and secret for each aws account.  
+It relies on you having boto installed and aws profiles set up containing your key and secret for each aws account.
 it has its own config file which list the profiles to use and the regions to search.
 
 It can generate a cache of all servers in the configured regions by calling <code>awsi refresh</code>
@@ -28,7 +28,7 @@ cache_file: /tmp/awsi_cache
 
 Usage
 -----
-usage awsi [refresh|i-12345|54.32.10.01|Live Web Server 01]
+usage awsi [ refresh|search [server name] | i-12345 | 54.32.10.01 | Live Web Server 01 ]
 
 
 Todo
