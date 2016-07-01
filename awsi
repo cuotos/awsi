@@ -75,7 +75,7 @@ def open_ssh_session(instance):
 
 
 def print_usage():
-    print "usage {} [refresh|i-12345|54.32.10.01|Live Web Server 01]".format(os.path.basename(__file__))
+    print "usage {} [refresh|list|i-12345|54.32.10.01|Live Web Server 01]".format(os.path.basename(__file__))
 
 
 def load_config():

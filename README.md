@@ -30,7 +30,7 @@ cache_file: /tmp/awsi_cache
 
 Usage
 -----
-usage awsi [ refresh|search [server name] | i-12345 | 54.32.10.01 | Live Web Server 01 ]
+usage awsi [ refresh| i-12345 | 54.32.10.01 | Live Web Server ]
 
 
 Todo
