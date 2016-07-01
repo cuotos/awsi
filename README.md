@@ -11,7 +11,9 @@ it has its own config file which list the profiles to use and the regions to sea
 
 It can generate a cache of all servers in the configured regions by calling <code>awsi refresh</code>
 
-It can then search for instances using the instanceId, public ip address or name tag
+It can then connect to an instance using the instanceId, public ip address or name tag
+If more than one server is found (maybe they have the same name) it will show you all of them and require you to use a different
+piece of information. ID is unique so this is recommended.
 
 Configuration
 -------------
