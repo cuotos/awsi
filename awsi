@@ -25,16 +25,8 @@ def print_line(k, v):
 
 
 def find_instance_from(search_field, search_string):
-    try:
-        f = open(cache_file, "r")
-    except IOError as e:
-        print e
-        print "Cache file not found, run awsi refresh to generate it"
-        sys.exit(1)
 
-    all_instances = pickle.load(f)
-    f.close()
-
+    all_instances = get_all_servers_from_cache_file()
     instance = filter(lambda instance: instance[search_field] == search_string, all_instances)
 
     if not instance:
@@ -101,6 +93,7 @@ def load_config():
     profiles = config.get('main','profiles').split(',')
     cache_file = config.get('main','cache_file')
 
+
 def retrieve_servers_from_aws_account(profile):
     global all_instances
 
@@ -126,6 +119,7 @@ def retrieve_servers_from_aws_account(profile):
             })
         conn.close()
 
+
 def refresh_cache():
     global all_instances
     threads = []
@@ -138,9 +132,9 @@ def refresh_cache():
         for t in threads:
             t.join()
 
-        f = open(cache_file, "w")
-        pickle.dump(all_instances, f)
-        f.close()
+        with open(cache_file, 'w') as f:
+            pickle.dump(all_instances, f)
+
         print "Cache written to {}".format(cache_file)
     except Exception as e:
         print e.message
@@ -149,6 +143,21 @@ def refresh_cache():
         print "Cancelled"
     except boto.provider.ProfileNotFoundError:
         print "profile '{}' not found in aws config".format(profile)
+
+
+def get_all_servers_from_cache_file():
+    try:
+        with open(cache_file, 'r') as f:
+            return pickle.load(f)
+    except IOError as e:
+        print e
+        print "Cache file not found, run awsi refresh to generate it"
+        sys.exit(1)
+
+
+def print_cache():
+    for server in get_all_servers_from_cache_file():
+        print server['name']
 
 
 if __name__ == '__main__':
@@ -169,6 +178,10 @@ if __name__ == '__main__':
 
     if "refresh" == arg:
         refresh_cache()
+        sys.exit()
+
+    if "list" == arg:
+        print_cache()
         sys.exit()
 
     connect_to_instance = None
