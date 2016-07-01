@@ -27,7 +27,7 @@ def find_instance_from(search_field, search_string):
     all_instances = get_all_servers_from_cache_file()
 
     if search_field == "name":
-        found_instances = [instance for instance in all_instances if search_string in instance['name']]
+        found_instances = [instance for instance in all_instances if search_string.lower() in instance['name'].lower()]
     else:
         found_instances = [instance for instance in all_instances if instance[search_field] == search_string]
 
@@ -167,13 +167,21 @@ def print_cache():
     sys.exit()
 
 
+def establish_search_field_from_args(arg_string):
+    ip_re = re.compile('^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$')
+    id_re = re.compile('^i-.{8}$')
+
+    if ip_re.match(arg_string):
+        return "ip"
+    elif id_re.match(arg_string):
+        return "id"
+    else:
+        return "name"
+
 if __name__ == '__main__':
 
     arg = ' '.join(sys.argv[1:])
     
-    ip_re = re.compile('^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$')
-    id_re = re.compile('^i-.{8}$')
-
     if not arg:
         print_usage()
         sys.exit()
@@ -191,12 +199,9 @@ if __name__ == '__main__':
 
     connect_to_instance = None
 
-    if ip_re.match(arg):
-        connect_to_instance = find_instance_from("ip", arg)
-    elif id_re.match(arg):
-        connect_to_instance = find_instance_from("id", arg)
-    else:
-        connect_to_instance = find_instance_from("name", arg)
+    search_field = establish_search_field_from_args(arg)
+
+    connect_to_instance = find_instance_from(search_field, arg)
 
     print_instance_info(connect_to_instance)
     open_ssh_session(connect_to_instance)
