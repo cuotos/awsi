@@ -58,6 +58,7 @@ def print_instance_info(instance):
     print_line('Type', instance['type'])
     print_line('State', instance['state'])
     print_line('Key', instance['key'])
+    print_line('Launch', instance['launch_time'])    
     print_line('DNS', instance['dns'])
     print ''
 
@@ -118,7 +119,8 @@ def retrieve_servers_from_aws_account(profile):
                 "type":instance.instance_type,
                 "state":instance.state,
                 "key":instance.key_name,
-                "dns":instance.public_dns_name
+                "dns":instance.public_dns_name,
+                "launch_time":instance.launch_time
             })
         conn.close()
 
