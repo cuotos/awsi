@@ -18,6 +18,7 @@ profile = None
 regions = None
 cache_file = None
 
+all_instances = []
 
 def print_line(k, v):
     print "{0}:\t{1}".format(k,v)
