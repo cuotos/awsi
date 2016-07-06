@@ -112,7 +112,7 @@ def retrieve_servers_from_aws_account(profile):
         for instance in instances:
             all_instances.append({
                 "id":instance.id,
-                "name": instance.tags.get('Name', None),
+                "name": instance.tags.get('Name', 'no-name-assigned'),
                 "ip":instance.ip_address,
                 "acc":profile,
                 "az":instance.placement,
