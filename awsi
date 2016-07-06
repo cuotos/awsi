@@ -24,7 +24,7 @@ def print_line(k, v):
     print "{0}:\t{1}".format(k,v)
 
 
-def find_instance_from(search_field, search_string):
+def search_for_instance_using_known_field(search_field, search_string):
     all_instances = get_all_servers_from_cache_file()
 
     if search_field == "name":
@@ -170,7 +170,7 @@ def print_cache():
     sys.exit()
 
 
-def establish_search_field_from_args(arg_string):
+def establish_which_field_to_search_by_from_args(arg_string):
     ip_re = re.compile('^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$')
     id_re = re.compile('^i-.{8}$')
 
@@ -202,9 +202,9 @@ if __name__ == '__main__':
 
     connect_to_instance = None
 
-    search_field = establish_search_field_from_args(arg)
+    search_field = establish_which_field_to_search_by_from_args(arg)
 
-    connect_to_instance = find_instance_from(search_field, arg)
+    connect_to_instance = search_for_instance_using_known_field(search_field, arg)
 
     print_instance_info(connect_to_instance)
     open_ssh_session(connect_to_instance)
