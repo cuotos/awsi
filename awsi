@@ -61,8 +61,12 @@ def print_instance_info(instance):
     print_line('Key', instance['key'])
     print_line('Launch', instance['launch_time'])    
     print_line('DNS', instance['dns'])
+    print_line('ssh', generate_ssh_command_string(instance))
     print ''
 
+
+def generate_ssh_command_string(instance):
+	return "ssh ec2-user@{} -i {}/.ssh/{}.pem".format(instance['ip'], os.path.expanduser("~"), instance['key'])
 
 def open_ssh_session(instance):
     ssh_key_path = "{}/.ssh/{}.pem".format(os.path.expanduser("~"), instance['key'])
