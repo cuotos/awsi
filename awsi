@@ -29,6 +29,8 @@ def search_for_instance_using_known_field(search_field, search_string):
 
     if search_field == "name":
         found_instances = [instance for instance in all_instances if search_string.lower() in instance['name'].lower()]
+    elif search_field == "id":
+        found_instances = [instance for instance in all_instances if search_string in instance['id']]
     else:
         found_instances = [instance for instance in all_instances if instance[search_field] == search_string]
 
@@ -190,11 +192,10 @@ def establish_which_field_to_search_by_from_args(arg_string):
     id_17_re = re.compile('^i-.{17}$')
 
     if private_ip_re.match(arg_string):
-        print "SEARCHING BY PRIVATE IP"
         return "priip"
     elif ip_re.match(arg_string):
         return "ip"
-    elif id_8_re.match(arg_string) or id_17_re.match(arg_string):
+    elif arg_string.startswith("i-"):
         return "id"
     else:
         return "name"
