@@ -186,14 +186,15 @@ def establish_which_field_to_search_by_from_args(arg_string):
     	'(^192\.168\.[0-9]{1,3}\.[0-9]{1,3})$'
     )
     ip_re = re.compile('^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$')
-    id_re = re.compile('^i-.{8}$')
+    id_8_re = re.compile('^i-.{8}$')
+    id_17_re = re.compile('^i-.{17}$')
 
     if private_ip_re.match(arg_string):
         print "SEARCHING BY PRIVATE IP"
         return "priip"
     elif ip_re.match(arg_string):
         return "ip"
-    elif id_re.match(arg_string):
+    elif id_8_re.match(arg_string) or id_17_re.match(arg_string):
         return "id"
     else:
         return "name"
