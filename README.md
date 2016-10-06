@@ -1,4 +1,4 @@
-AWS Instance Information.
+AWS Instance Information
 ========================
 
 
