@@ -5,7 +5,7 @@ def readme():
     return f.read()
 
 setup(name='awsi',
-      version='1.1',
+      version='1.0',
       description='Amazon Web Services information and connection tool',
       long_description=readme(),
       url='http://gitlab.com/cuotos/awsi',
@@ -13,6 +13,10 @@ setup(name='awsi',
       author_email='dan@danpotepa.co.uk',
       license='wtfpl',
       packages=['awsi'],
+      classifiers=[
+            'Programming Language :: Python :: 2.7'
+            'Topic :: Utilities'
+      ],
       install_requires=[
             'boto'
       ],
