@@ -84,7 +84,7 @@ def open_ssh_session(instance):
 
 
 def print_usage():
-    print "usage {} [refresh|list|i-12345|54.32.10.01|Live Web Server 01]".format(os.path.basename(__file__))
+    print "usage awsi [refresh|list|i-12345|54.32.10.01|Live Web Server 01]"
 
 
 def load_config():
@@ -200,9 +200,9 @@ def establish_which_field_to_search_by_from_args(arg_string):
     else:
         return "name"
 
-if __name__ == '__main__':
+def run(argv):
 
-    arg = ' '.join(sys.argv[1:])
+    arg = ' '.join(argv[1:])
     
     if not arg:
         print_usage()
