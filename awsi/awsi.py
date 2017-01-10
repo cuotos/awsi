@@ -226,3 +226,6 @@ def main():
 
     print_instance_info(connect_to_instance)
     open_ssh_session(connect_to_instance)
+
+if __name__ == '__main__':
+    main()
