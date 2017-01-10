@@ -6,7 +6,7 @@ def readme():
 
 setup(name='awsi',
       version='1.0',
-      description='Amazon Web Services information and connection tool',
+      description='AWS EC2 information and connection tool',
       long_description=readme(),
       url='http://gitlab.com/cuotos/awsi',
       author='Dan Potepa',
@@ -14,7 +14,7 @@ setup(name='awsi',
       license='wtfpl',
       packages=['awsi'],
       classifiers=[
-            'Programming Language :: Python :: 2.7'
+            'Programming Language :: Python :: 2.7',
             'Topic :: Utilities'
       ],
       install_requires=[
