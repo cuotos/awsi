@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='awsi',
-      version='0.1',
+      version='1.0',
       description='AWSI',
       url='http://gitlab.com/cuotos/awsi',
       author='Dan Potepa',
