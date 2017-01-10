@@ -15,6 +15,12 @@ It can then connect to an instance using the instanceId, public ip address or na
 If more than one server is found (maybe they have the same name) it will show you all of them and require you to use a different
 piece of information. ID is unique so this is recommended.
 
+Installation
+------------
+
+clone the repo and run
+<code>pip install .</code>
+
 Configuration
 -------------
 In you home directory create a folder called '.awsi'  

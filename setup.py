@@ -11,6 +11,8 @@ setup(name='awsi',
       install_requires=[
             'boto'
       ],
-      scripts=['bin/awsi'],
+      entry_points = {
+            'console_scripts': ['awsi=awsi.awsi:main'],
+      },
       zip_safe=False
 )
