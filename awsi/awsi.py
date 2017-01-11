@@ -11,6 +11,7 @@ import os
 import ConfigParser
 import pickle
 from threading import Thread
+import pkg_resources
 
 
 profile = None
@@ -217,6 +218,10 @@ def main():
 
     if "list" == arg:
         print_cache()
+    
+    if "version" == arg:
+    	print pkg_resources.require("awsi")[0].version
+    	sys.exit()
 
     connect_to_instance = None
 

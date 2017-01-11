@@ -5,7 +5,7 @@ def readme():
     return f.read()
 
 setup(name='awsi',
-      version='1.3.1',
+      version='1.3.2',
       description='AWS EC2 information and connection tool',
       long_description=readme(),
       url='http://gitlab.com/cuotos/awsi',
