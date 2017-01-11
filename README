@@ -21,6 +21,10 @@ Installation
 clone the repo and run
 <code>pip install .</code>
 
+OR 
+
+pip install awsi
+
 Configuration
 -------------
 In you home directory create a folder called '.awsi'  
@@ -36,7 +40,7 @@ cache_file: /tmp/awsi_cache
 
 Usage
 -----
-usage awsi [ refresh| i-12345 | 54.32.10.01 | Live Web Server ]
+usage awsi [ refresh| i-12345 | 54.32.10.01 | Live Web Server | version ]
 
 
 Todo
