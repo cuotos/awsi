@@ -47,7 +47,9 @@ setuptools.setup(
         'Programming Language :: Python :: 2.7',
         'Topic :: Utilities'
     ],
-    install_requires=open("requirements.txt").readlines(),
+    install_requires=[
+    	'boto==2.45.0'
+    ],
     entry_points = {
         'console_scripts': ['awsi=awsi.awsi:main'],
     },
