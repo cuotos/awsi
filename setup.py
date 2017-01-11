@@ -1,11 +1,11 @@
 from setuptools import setup
 
 def readme():
-  with open("README.md") as f:
+  with open("README") as f:
     return f.read()
 
 setup(name='awsi',
-      version='1.0',
+      version='1.3.1',
       description='AWS EC2 information and connection tool',
       long_description=readme(),
       url='http://gitlab.com/cuotos/awsi',
