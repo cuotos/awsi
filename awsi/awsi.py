@@ -12,6 +12,7 @@ import ConfigParser
 import pickle
 from threading import Thread
 import pkg_resources
+import argparse
 
 
 profile = None
@@ -157,8 +158,6 @@ def refresh_cache():
     except boto.provider.ProfileNotFoundError:
         print "profile '{}' not found in aws config".format(profile)
 
-    sys.exit()
-
 
 def get_all_servers_from_cache_file():
     try:
@@ -174,8 +173,6 @@ def print_cache():
     sorted_list = sorted(get_all_servers_from_cache_file(), key=lambda k: k['name'])
     for instance in sorted_list:
         print instance['name']
-
-    sys.exit()
 
 
 def establish_which_field_to_search_by_from_args(arg_string):
@@ -200,34 +197,43 @@ def establish_which_field_to_search_by_from_args(arg_string):
     else:
         return "name"
 
+
 def main():
-    
-    arg = ' '.join(sys.argv[1:])
-    
-    if not arg:
-        print_usage()
-        sys.exit()
+
+    parser = argparse.ArgumentParser()
+    mxgroup = parser.add_mutually_exclusive_group(required=False)
+    mxgroup.add_argument('--refresh', help='refresh the cache', action='store_true')
+    mxgroup.add_argument('--list', help='list all instances in the cache', action='store_true')
+    mxgroup.add_argument('--version', help='print version', action='store_true')
+    parser.add_argument('search_string', nargs='*', help='ip, instance id or string to find in Name tag')
+
+    args = parser.parse_args()
+
+    if not args.list and not args.version and not args.refresh and not args.search_string:
+        parser.error('must provide a string to search for')
+
+    search_string = ' '.join(args.search_string)
 
     load_config()
 
     if os.path.basename(__file__) == 'awssh':
         __ssh_session = True
 
-    if "refresh" == arg:
+    if args.refresh:
         refresh_cache()
-
-    if "list" == arg:
+        sys.exit()
+    elif args.list:
         print_cache()
-    
-    if "version" == arg:
-    	print pkg_resources.require("awsi")[0].version
-    	sys.exit()
+        sys.exit()
+    elif args.version:
+      	print pkg_resources.require("awsi")[0].version
+        sys.exit()
 
     connect_to_instance = None
 
-    search_field = establish_which_field_to_search_by_from_args(arg)
+    search_field = establish_which_field_to_search_by_from_args(search_string)
 
-    connect_to_instance = search_for_instance_using_known_field(search_field, arg)
+    connect_to_instance = search_for_instance_using_known_field(search_field, search_string)
 
     print_instance_info(connect_to_instance)
     open_ssh_session(connect_to_instance)
