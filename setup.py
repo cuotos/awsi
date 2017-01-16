@@ -13,12 +13,11 @@ def check_python_version():
 def read_descriptions():
     """Build a description for the project from documentation files."""
     try:
-        readme = open("README").read()
-        changelog = open("CHANGELOG").read()
+        readme = open("README.rst").read()
     except IOError:
         return "<placeholder>"
     else:
-        return readme + '\n' + changelog
+        return readme + '\n'
 
 
 def read_package_variable(key):
