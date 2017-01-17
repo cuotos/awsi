@@ -5,14 +5,14 @@ The boto python library will look for credentials matching each profile in ~/.aw
 http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
 '''
 import sys
-import boto.ec2
 import re
 import os
 import ConfigParser
 import pickle
 from threading import Thread
-import pkg_resources
 import argparse
+import pkg_resources
+import boto.ec2
 
 
 profile = None
@@ -21,19 +21,19 @@ cache_file = None
 
 all_instances = []
 
-def print_line(k, v):
-    print "{0}:\t{1}".format(k,v)
+def print_line(key, value):
+    print "{0}:\t{1}".format(key, value)
 
 
 def search_for_instance_using_known_field(search_field, search_string):
-    all_instances = get_all_servers_from_cache_file()
+    all_instances_from_cache = get_all_servers_from_cache_file()
 
     if search_field == "name":
-        found_instances = [instance for instance in all_instances if search_string.lower() in instance['name'].lower()]
+        found_instances = [instance for instance in all_instances_from_cache if search_string.lower() in instance['name'].lower()]
     elif search_field == "id":
-        found_instances = [instance for instance in all_instances if search_string in instance['id']]
+        found_instances = [instance for instance in all_instances_from_cache if search_string in instance['id']]
     else:
-        found_instances = [instance for instance in all_instances if instance[search_field] == search_string]
+        found_instances = [instance for instance in all_instances_from_cache if instance[search_field] == search_string]
 
     if not found_instances:
         print "Not Found. Consider running a refresh if you think this is a mistake"
@@ -62,14 +62,15 @@ def print_instance_info(instance):
     print_line('Type', instance['type'])
     print_line('State', instance['state'])
     print_line('Key', instance['key'])
-    print_line('Launch', instance['launch_time'])    
+    print_line('Launch', instance['launch_time'])
     print_line('DNS', instance['dns'])
     print_line('ssh', generate_ssh_command_string(instance))
     print ''
 
 
 def generate_ssh_command_string(instance):
-	return "ssh ec2-user@{} -i {}/.ssh/{}.pem".format(instance['ip'], os.path.expanduser("~"), instance['key'])
+    return "ssh ec2-user@{} -i {}/.ssh/{}.pem".format(instance['ip'], os.path.expanduser("~"), instance['key'])
+
 
 def open_ssh_session(instance):
     ssh_key_path = "{}/.ssh/{}.pem".format(os.path.expanduser("~"), instance['key'])
@@ -122,7 +123,7 @@ def retrieve_servers_from_aws_account(profile):
                 "id":instance.id,
                 "name": instance.tags.get('Name', 'no-name-assigned'),
                 "ip":instance.ip_address,
-				"priip":instance.private_ip_address,
+                "priip":instance.private_ip_address,
                 "acc":profile,
                 "az":instance.placement,
                 "type":instance.instance_type,
@@ -139,32 +140,32 @@ def refresh_cache():
     threads = []
     try:
         for profile in profiles:
-            t = Thread(name="Thread-{}".format(profile), target=retrieve_servers_from_aws_account, args=(profile,))
-            t.start()
-            threads.append(t)
+            thread = Thread(name="Thread-{}".format(profile), target=retrieve_servers_from_aws_account, args=(profile,))
+            thread.start()
+            threads.append(thread)
 
-        for t in threads:
-            t.join()
+        for thread in threads:
+            thread.join()
 
-        with open(cache_file, 'w') as f:
-            pickle.dump(all_instances, f)
+        with open(cache_file, 'w') as files:
+            pickle.dump(all_instances, files)
 
         print "Cache written to {}".format(cache_file)
-    except Exception as e:
-        print e.message
-        sys.exit(1)
-    except KeyboardInterrupt:
-        print "Cancelled"
     except boto.provider.ProfileNotFoundError:
         print "profile '{}' not found in aws config".format(profile)
+    except KeyboardInterrupt:
+        print "Cancelled"
+    except Exception as error:
+        print error.message
+        sys.exit(1)
 
 
 def get_all_servers_from_cache_file():
     try:
-        with open(cache_file, 'r') as f:
-            return pickle.load(f)
-    except IOError as e:
-        print e
+        with open(cache_file, 'r') as file:
+            return pickle.load(file)
+    except IOError as error:
+        print error
         print "Cache file not found, run awsi refresh to generate it"
         sys.exit(1)
 
@@ -177,22 +178,22 @@ def print_cache():
 
 def establish_which_field_to_search_by_from_args(arg_string):
     private_ip_re = re.compile(
-    	'(^127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$)|'
-    	'(^10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$)|'
-    	'(^172\.1[6-9]{1}[0-9]{0,1}\.[0-9]{1,3}\.[0-9]{1,3}$)|'
-    	'(^172\.2[0-9]{1}[0-9]{0,1}\.[0-9]{1,3}\.[0-9]{1,3}$)|'
-    	'(^172\.3[0-1]{1}[0-9]{0,1}\.[0-9]{1,3}\.[0-9]{1,3}$)|'
-    	'(^192\.168\.[0-9]{1,3}\.[0-9]{1,3})$'
+        r'(^127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$)|'
+        r'(^10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$)|'
+        r'(^172\.1[6-9]{1}[0-9]{0,1}\.[0-9]{1,3}\.[0-9]{1,3}$)|'
+        r'(^172\.2[0-9]{1}[0-9]{0,1}\.[0-9]{1,3}\.[0-9]{1,3}$)|'
+        r'(^172\.3[0-1]{1}[0-9]{0,1}\.[0-9]{1,3}\.[0-9]{1,3}$)|'
+        r'(^192\.168\.[0-9]{1,3}\.[0-9]{1,3})$'
     )
-    ip_re = re.compile('^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$')
-    id_8_re = re.compile('^i-.{8}$')
-    id_17_re = re.compile('^i-.{17}$')
+    ip_re = re.compile(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$')
+    id_8_re = re.compile(r'^i-.{8}$')
+    id_17_re = re.compile(r'^i-.{17}$')
 
     if private_ip_re.match(arg_string):
         return "priip"
     elif ip_re.match(arg_string):
         return "ip"
-    elif arg_string.startswith("i-"):
+    elif id_8_re.match(arg_string) or id_17_re.match(arg_string):
         return "id"
     else:
         return "name"
@@ -216,9 +217,6 @@ def main():
 
     load_config()
 
-    if os.path.basename(__file__) == 'awssh':
-        __ssh_session = True
-
     if args.refresh:
         refresh_cache()
         sys.exit()
@@ -226,7 +224,7 @@ def main():
         print_cache()
         sys.exit()
     elif args.version:
-      	print pkg_resources.require("awsi")[0].version
+        print pkg_resources.require("awsi")[0].version
         sys.exit()
 
     connect_to_instance = None
