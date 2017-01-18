@@ -13,7 +13,7 @@ def check_python_version():
 def read_descriptions():
     """Build a description for the project from documentation files."""
     try:
-        readme = open("README.rst").read()
+        readme = open("README.md").read()
     except IOError:
         return "<placeholder>"
     else:
