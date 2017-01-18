@@ -36,14 +36,16 @@ where profiles refer to your aws cli profiles found in .aws/credentials | .aws/c
 
 Usage
 -----
-usage: awsi [-h] [--refresh | --list | --version]  
+```
+usage: awsi [-h] [--refresh | --list | --version]
             [search_string [search_string ...]]
 
-positional arguments:  
-  search_string  ip, instance id or string to find in Name tag  
+positional arguments:
+  search_string  ip, instance id or string to find in Name tag
 
-optional arguments:  
-  -h, --help     show this help message and exit  
-  --refresh      refresh the cache  
-  --list         list all instances in the cache  
-  --version      print version  
+optional arguments:
+  -h, --help     show this help message and exit
+  --refresh      refresh the cache
+  --list         list all instances in the cache
+  --version      print version
+```
