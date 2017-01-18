@@ -36,6 +36,7 @@ where profiles refer to your aws cli profiles found in .aws/credentials | .aws/c
 
 Usage
 -----
+
 ```
 usage: awsi [-h] [--refresh | --list | --version]
             [search_string [search_string ...]]
