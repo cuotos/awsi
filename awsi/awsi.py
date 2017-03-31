@@ -69,7 +69,15 @@ def print_instance_info(instance):
 
 
 def generate_ssh_command_string(instance):
-    return "ssh ec2-user@{} -i {}/.ssh/{}.pem".format(instance['ip'], os.path.expanduser("~"), instance['key'])
+    return "ssh -o StrictHostKeyChecking=no ec2-user@{} -i {}/.ssh/{}.pem".format(choose_ip_to_use(instance), os.path.expanduser("~"), instance['key'])
+
+
+def choose_ip_to_use(instance):
+    if instance['usePrivateIp']:
+        return instance['priip']
+    elif instance['priip'] and not instance['ip']:
+        return instance['priip']
+    return instance['ip']
 
 
 def open_ssh_session(instance):
@@ -78,7 +86,7 @@ def open_ssh_session(instance):
         if os.path.isfile(ssh_key_path):
             try:
                 raw_input('Press enter to continue...\n')
-                os.system('ssh -o StrictHostKeyChecking=no -i {} ec2-user@{}'.format(ssh_key_path, instance['ip']))
+                os.system(generate_ssh_command_string(instance))
             except KeyboardInterrupt:
                 print "Cancelled"
         else:
@@ -130,7 +138,8 @@ def retrieve_servers_from_aws_account(profile):
                 "state":instance.state,
                 "key":instance.key_name,
                 "dns":instance.public_dns_name,
-                "launch_time":instance.launch_time
+                "launch_time":instance.launch_time,
+                "usePrivateIp": False
             })
         conn.close()
 
@@ -206,6 +215,7 @@ def main():
     mxgroup.add_argument('--refresh', help='refresh the cache', action='store_true')
     mxgroup.add_argument('--list', help='list all instances in the cache', action='store_true')
     mxgroup.add_argument('--version', help='print version', action='store_true')
+    parser.add_argument('-p', '--privateip', help='use the hosts private ip address', action='store_true')
     parser.add_argument('search_string', nargs='*', help='ip, instance id or string to find in Name tag')
 
     args = parser.parse_args()
@@ -232,6 +242,8 @@ def main():
     search_field = establish_which_field_to_search_by_from_args(search_string)
 
     connect_to_instance = search_for_instance_using_known_field(search_field, search_string)
+
+    connect_to_instance['usePrivateIp'] = args.privateip
 
     print_instance_info(connect_to_instance)
     open_ssh_session(connect_to_instance)
