@@ -28,7 +28,7 @@ The contents of the file should look like the following.
 
 [main]  
 profiles: default,work,work2  
-regions: eu-west-1,eu-central-1,us-east-1,us-west-2,us-west-1
+regions: eu-west-1,eu-central-1,us-east-1,us-west-2,us-west-1  
 cache_file: /tmp/awsi_cache
 
 where profiles refer to your aws cli profiles found in .aws/credentials | .aws/config
