@@ -18,6 +18,7 @@ import boto.ec2
 profile = None
 regions = None
 cache_file = None
+use_private_ip = False
 
 all_instances = []
 
@@ -73,7 +74,7 @@ def generate_ssh_command_string(instance):
 
 
 def choose_ip_to_use(instance):
-    if instance['usePrivateIp']:
+    if use_private_ip:
         return instance['priip']
     elif instance['priip'] and not instance['ip']:
         return instance['priip']
@@ -220,6 +221,9 @@ def main():
 
     args = parser.parse_args()
 
+    global use_private_ip 
+    use_private_ip = args.privateip
+
     if not args.list and not args.version and not args.refresh and not args.search_string:
         parser.error('must provide a string to search for')
 
@@ -242,8 +246,6 @@ def main():
     search_field = establish_which_field_to_search_by_from_args(search_string)
 
     connect_to_instance = search_for_instance_using_known_field(search_field, search_string)
-
-    connect_to_instance['usePrivateIp'] = args.privateip
 
     print_instance_info(connect_to_instance)
     open_ssh_session(connect_to_instance)
