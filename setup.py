@@ -37,6 +37,7 @@ setuptools.setup(
     version=read_package_variable('__version__'),
     description='AWS EC2 information and connection tool',
     long_description=read_descriptions(),
+    long_description_content_type='text/markdown',
     url='http://github.com/cuotos/awsi',
     author='Dan Potepa',
     author_email='dan@danpotepa.co.uk',
